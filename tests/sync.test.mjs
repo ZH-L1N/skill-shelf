@@ -45,9 +45,18 @@ function writeSkill(root, slug, description) {
 
 /**
  * A fake home with all three personal roots populated (an empty registered root
- * is a hard failure by design) and an empty plugin manifest.
+ * is a hard failure by design) plus one PUBLIC-marketplace plugin root.
+ *
+ * The marketplace root is what exercises the publish filter: `delta` is scanned
+ * and passes the blocklist, but must never reach the written file. None of these
+ * slugs belong to a real AGGREGATE_GROUPS group, so aggregation is a no-op here.
  */
-function makeHome({ claude, codex = { beta: 'Beta skill' }, agents = { gamma: 'Gamma skill' } } = {}) {
+function makeHome({
+  claude,
+  codex = { beta: 'Beta skill' },
+  agents = { gamma: 'Gamma skill' },
+  plugin = { delta: 'Delta marketplace skill' },
+} = {}) {
   const home = makeTempDir('skill-shelf-home-');
   const roots = {
     '.claude/skills': claude ?? { alpha: 'Alpha skill' },
@@ -59,11 +68,21 @@ function makeHome({ claude, codex = { beta: 'Beta skill' }, agents = { gamma: 'G
     fs.mkdirSync(root, { recursive: true });
     for (const [slug, description] of Object.entries(skills)) writeSkill(root, slug, description);
   }
+
+  const installPath = path.join(home, '.claude/plugins/cache/public-market/toolbox/1.0.0');
+  const pluginRoot = path.join(installPath, 'skills');
+  fs.mkdirSync(pluginRoot, { recursive: true });
+  for (const [slug, description] of Object.entries(plugin)) writeSkill(pluginRoot, slug, description);
+
   const pluginsDir = path.join(home, '.claude', 'plugins');
   fs.mkdirSync(pluginsDir, { recursive: true });
   fs.writeFileSync(
     path.join(pluginsDir, 'installed_plugins.json'),
-    JSON.stringify({ version: 1, plugins: {} }, null, 2),
+    JSON.stringify(
+      { version: 1, plugins: { 'toolbox@public-market': [{ scope: 'user', installPath }] } },
+      null,
+      2,
+    ),
   );
   return home;
 }
@@ -122,14 +141,23 @@ test('sync (a): a dry run exits 0 and writes nothing at all', () => {
 
 test('sync (b): --write writes data/generated.json and the .last-sync digest', () => {
   const fx = setup();
-  const { code } = run({ argv: ['--write'], home: fx.home, cwd: fx.cwd, denylist: fx.denylist });
+  const { code, out } = run({ argv: ['--write'], home: fx.home, cwd: fx.cwd, denylist: fx.denylist });
 
   assert.equal(code, EXIT_OK);
   const written = JSON.parse(fs.readFileSync(fx.generated, 'utf8'));
   assert.deepEqual(
     written.entries.map((e) => e.slug),
     ['alpha', 'beta', 'gamma'],
+    'personal only: the marketplace skill is scanned but never published',
   );
+  assert.ok(
+    written.entries.every((e) => e.origin === 'personal'),
+    'every published entry has origin personal',
+  );
+  // The marketplace skill really was scanned and really did survive the blocklist.
+  assert.match(out, /plugin:toolbox@public-market/);
+  assert.match(out, /entries {16}4 \(3 personal\)/);
+  assert.match(out, /published: 3 personal entries \(1 marketplace entries scanned but not published\)/);
   assert.match(written.generatedAt, /^\d{4}-\d{2}-\d{2}T/);
   assert.equal(
     fs.readFileSync(fx.lastSync, 'utf8').trim(),

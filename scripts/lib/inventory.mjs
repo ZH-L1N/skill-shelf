@@ -42,6 +42,36 @@ export const BLOCKLIST = Object.freeze({
 /** Floor for the content denylist: fewer terms than this and sync refuses. */
 export const DENYLIST_MIN_TERMS = 5;
 
+/**
+ * Presentation-only grouping applied to the PUBLISHED list (see `applyAggregates`).
+ * A shelf of twelve sibling skills from one author reads as noise; one card reads
+ * as a thing. Members are matched by slug, so a member that is not installed
+ * simply contributes nothing. `tests/inventory.test.mjs` pins this real constant.
+ */
+export const AGGREGATE_GROUPS = Object.freeze([
+  Object.freeze({
+    slug: 'matt-pocock-skills',
+    name: "Matt Pocock's skills",
+    description:
+      "Engineering-workflow skills by Matt Pocock (mattpocock/skills): wayfinder, to-spec, " +
+      'to-tickets, TDD, code review, prototyping, bug diagnosis, domain modeling, grilling, research.',
+    memberSlugs: Object.freeze([
+      'code-review',
+      'diagnosing-bugs',
+      'domain-modeling',
+      'grill-me',
+      'grilling',
+      'prototype',
+      'research',
+      'setup-matt-pocock-skills',
+      'tdd',
+      'to-spec',
+      'to-tickets',
+      'wayfinder',
+    ]),
+  }),
+]);
+
 const PERSONAL_ROOTS = [
   { runtime: 'claude', dir: '.claude/skills' },
   { runtime: 'codex', dir: '.codex/skills' },
@@ -421,6 +451,48 @@ export function mergeEntries(rawEntries) {
   }
 
   return merged.sort((a, b) => (a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0));
+}
+
+// ---------------------------------------------------------------------------
+// Aggregation (publish-time only)
+// ---------------------------------------------------------------------------
+
+/**
+ * Collapse each group's installed members into a single aggregate entry.
+ *
+ * This runs AFTER merge and reconciliation, on the published list only, so the
+ * raw-vs-merged reconciliation never sees an invented slug. A group that
+ * absorbed nothing emits nothing — an uninstalled group is simply absent.
+ *
+ * @param {Array<object>} entries merged, personal-only entries
+ * @param {ReadonlyArray<{slug: string, name: string, description: string, memberSlugs: ReadonlyArray<string>}>} groups
+ * @returns {{entries: Array<object>, absorbed: string[]}}
+ */
+export function applyAggregates(entries, groups = AGGREGATE_GROUPS) {
+  const absorbed = [];
+  const emitted = [];
+
+  for (const group of groups) {
+    const members = new Set(group.memberSlugs);
+    const hits = entries.filter((e) => members.has(e.slug));
+    if (hits.length === 0) continue;
+
+    absorbed.push(...hits.map((e) => e.slug));
+    emitted.push({
+      slug: group.slug,
+      name: group.name,
+      description: group.description,
+      runtimes: sortRuntimes(hits.flatMap((e) => e.runtimes ?? [])),
+      origin: 'personal',
+    });
+  }
+
+  const absorbedSlugs = new Set(absorbed);
+  const kept = entries.filter((e) => !absorbedSlugs.has(e.slug));
+  const result = [...kept, ...emitted].sort((a, b) =>
+    a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0,
+  );
+  return { entries: result, absorbed };
 }
 
 // ---------------------------------------------------------------------------

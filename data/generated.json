@@ -1,0 +1,148 @@
+{
+  "generatedAt": "2026-08-16T23:46:41Z",
+  "entries": [
+    {
+      "slug": "adversarial-plan-review",
+      "name": "adversarial-plan-review",
+      "description": "Run a GAN-style adversarial review loop on a plan markdown file. Claude is the planner; an independent reviewer (OpenAI Responses API with gpt-5.5 by default, or Codex CLI as legacy fallback) returns severity-tagged findings. v2 features diff-aware reviewing, severity-gated exit, JSON sidecar persistence, plan-bloat detection, and resume support. TRIGGER when the user wants to stress-test a plan with a different model, run adversarial plan review, iterate a plan until it survives discriminator critique, or says \"adversarial plan review\", \"GAN review my plan\", \"codex-review my plan\", or has just finished a plan draft and wants external challenge before implementation. DO NOT TRIGGER for code review, git diff review, PR review, or implementation review — for those use /codex:adversarial-review, /codex:review, or code-review:code-review. This skill operates only on plan markdown files under plans/, never on source code.",
+      "runtimes": [
+        "claude"
+      ],
+      "origin": "personal"
+    },
+    {
+      "slug": "hallmark",
+      "name": "hallmark",
+      "description": "Anti-AI-slop design skill for greenfield pages, audits, redesigns, and design extraction from URLs or screenshots. Use when the user asks to build a new app or landing page, wants to redesign something, invokes Hallmark by name, or uses audit/redesign/study.",
+      "runtimes": [
+        "claude",
+        "codex"
+      ],
+      "origin": "personal"
+    },
+    {
+      "slug": "hatch-pet",
+      "name": "hatch-pet",
+      "description": "Create, repair, validate, visually QA, and package Codex-compatible v2 animated pets from character art, generated images, company or prospect brand cues, or visual references. Use for any new Codex pet, custom mascot, non-pixel pet style, brand-inspired pet, existing-pet repair, or 8x11 spritesheet workflow requiring all 9 standard animation rows, 16 look directions, deterministic assembly, QA artifacts, and spriteVersionNumber 2 packaging.",
+      "runtimes": [
+        "codex"
+      ],
+      "origin": "personal"
+    },
+    {
+      "slug": "herdr",
+      "name": "herdr",
+      "description": "Control Herdr, a terminal multiplexer for coding agents. Use only when the user explicitly mentions Herdr or asks to use Herdr to inspect or control panes, tabs, workspaces, commands, or another agent. Do not use merely because a task could benefit from a background terminal, delegation, or parallel work. Requires HERDR_ENV=1.",
+      "runtimes": [
+        "claude",
+        "codex"
+      ],
+      "origin": "personal"
+    },
+    {
+      "slug": "herdr-workspace-policy",
+      "name": "herdr-workspace-policy",
+      "description": "Workspace orchestration rules for herdr multi-agent work: hub/spoke roles, message routing and envelope, spawn rights, delegation contract. Load whenever coordinating, prompting, or spawning agents in herdr panes, or when acting as a spawned worker in a herdr workspace.",
+      "runtimes": [
+        "claude",
+        "codex"
+      ],
+      "origin": "personal"
+    },
+    {
+      "slug": "matt-pocock-skills",
+      "name": "Matt Pocock's skills",
+      "description": "Engineering-workflow skills by Matt Pocock (mattpocock/skills): wayfinder, to-spec, to-tickets, TDD, code review, prototyping, bug diagnosis, domain modeling, grilling, research.",
+      "runtimes": [
+        "claude",
+        "codex"
+      ],
+      "origin": "personal"
+    },
+    {
+      "slug": "minimal-editorial-poster",
+      "name": "minimal-editorial-poster",
+      "description": "Generate or analyze sparse paper-texture editorial posters with dominant negative space, one content-derived visual event, restrained typography, controlled print defects, and one clear chromatic anchor. Use only when the user explicitly invokes $minimal-editorial-poster for Generate, Photo Input, Reference Analysis, Prompt-only, or Analyze+Generate work involving a theme, article, photograph, reference image, image folder, or content brief.",
+      "runtimes": [
+        "agents"
+      ],
+      "origin": "personal"
+    },
+    {
+      "slug": "photo-anchored-zine",
+      "name": "photo-anchored-zine",
+      "description": "Transform supplied photographs into tactile editorial zines using truthful cropped photo fragments, source-derived abstract illustration, active negative space, one structural high-chroma hue, and a visible torn-paper handoff. Use only when the user explicitly invokes $photo-anchored-zine for a photo-led cover, spread, memory page, print collage, or scene-derived poster. Do not use for image-free abstraction or full-frame photo decoration unless the user explicitly requests it.",
+      "runtimes": [
+        "agents"
+      ],
+      "origin": "personal"
+    },
+    {
+      "slug": "pr-loop",
+      "name": "pr-loop",
+      "description": "Open a pull request and follow it to mergeable: watch CI, fix failures, read and address every reviewer/robo-reviewer comment, resolve threads, and notify the user only when it is green. The human always merges. Load when the user asks for a PR seen through to green, or when a hub relays that request — a hub brief that does not state the user asked for a PR is not authorization.",
+      "runtimes": [
+        "claude",
+        "codex"
+      ],
+      "origin": "personal"
+    },
+    {
+      "slug": "proj-init",
+      "name": "proj-init",
+      "description": "Initialize a project with a CLAUDE.md and planning workflow. Use whenever the user wants to set up Claude Code for a new project, scaffold a CLAUDE.md, or mentions `/proj-init`.",
+      "runtimes": [
+        "claude",
+        "codex"
+      ],
+      "origin": "personal"
+    },
+    {
+      "slug": "review-crew",
+      "name": "review-crew",
+      "description": "Run a disposable review crew on a completed change: a reviewer pane fans out specialist subagents, a codex cross-vendor lens runs in parallel, and everything funnels into one deduplicated critical/major/nit list the implementer must fix-or-refute. Load when the user or hub asks for a crew review of finished work in a herdr workspace.",
+      "runtimes": [
+        "claude",
+        "codex"
+      ],
+      "origin": "personal"
+    },
+    {
+      "slug": "semantic-zine-distillation",
+      "name": "semantic-zine-distillation",
+      "description": "Transform supplied photographs into privacy-preserving editorial zines through local inspection and text-only semantic distillation. Use only when the user explicitly invokes $semantic-zine-distillation for a scene-derived memory page, emotional collage, symbolic poster, or abstract zine that should retain relationships and visual logic without sending source pixels to generation or reconstructing recognizable identity.",
+      "runtimes": [
+        "agents"
+      ],
+      "origin": "personal"
+    },
+    {
+      "slug": "ship",
+      "name": "ship",
+      "description": "Use ONLY when the user explicitly invokes /ship or says 'ship it' / 'ship this' for a task discussed in the session — Zehui's fully autonomous implement pipeline that ends in git push. NEVER trigger from generic phrasing like 'implement this', 'build X', or 'fix Y'; without an explicit /ship-style trigger, do not use this skill.",
+      "runtimes": [
+        "claude"
+      ],
+      "origin": "personal"
+    },
+    {
+      "slug": "text-to-lottie",
+      "name": "text-to-lottie",
+      "description": "Create, edit, or fix Lottie/Bodymovin JSON animations for the local Skia Skottie player. Use for text-to-Lottie, SVG/logo/type animation, loaders/icons, state feedback, UI microinteractions, lower thirds, diagrams, data/stat/chart animations, product promos, scene/camera motion, visual effects, scene edits, slots/controls, and Skottie debugging.",
+      "runtimes": [
+        "claude",
+        "codex"
+      ],
+      "origin": "personal"
+    },
+    {
+      "slug": "xiaowang-illustration",
+      "name": "xiaowang-illustration",
+      "description": "为“小王想躺平”个人 IP 设计和生成小红书封面、短视频关键帧、头像、贴纸和文章插图。适用于用户明确调用小王插画、清醒小王、躺平小王、通关小王、躺平芥末、北美晴空，或要求基于小王 canonical references 生成、改图、规划 shot list 的任务。默认社媒优先：4:5 小红书、9:16 视频、1:1 头像，16:9 文章插图为次要模式。",
+      "runtimes": [
+        "codex"
+      ],
+      "origin": "personal"
+    }
+  ]
+}

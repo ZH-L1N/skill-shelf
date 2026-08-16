@@ -5,10 +5,12 @@ import path from 'node:path';
 import { after, test } from 'node:test';
 
 import {
+  AGGREGATE_GROUPS,
   BLOCKLIST,
   DENYLIST_MIN_TERMS,
   SOURCE_PRECEDENCE,
   WORK_SKILL_SLUG,
+  applyAggregates,
   applyBlocklist,
   denylistGate,
   discoverSources,
@@ -677,6 +679,91 @@ test('case 18: reconcile enforces slug set equality and runtime conservation', (
   // There is deliberately no per-root "conservation" check: every wiring of it
   // compared a sum to itself (ship review rounds 1-2), and an unfalsifiable
   // check that reads as coverage is worse than none.
+});
+
+// ---------------------------------------------------------------------------
+// 20-21. publish-time aggregation
+// ---------------------------------------------------------------------------
+
+function merged(slug, runtimes, origin = 'personal') {
+  return { slug, name: slug, description: `${slug} description`, runtimes, origin };
+}
+
+const TEST_GROUPS = [
+  {
+    slug: 'zeta-bundle',
+    name: 'Zeta bundle',
+    description: 'Three synthetic sibling skills.',
+    memberSlugs: ['zm-one', 'zm-two', 'zm-three'],
+  },
+];
+
+test('case 20: applyAggregates absorbs members into one sorted aggregate entry', () => {
+  const input = [
+    merged('alpha', ['claude']),
+    merged('zm-one', ['codex']),
+    merged('zm-three', ['agents', 'claude']),
+    merged('zulu', ['claude']),
+  ];
+  const { entries, absorbed } = applyAggregates(input, TEST_GROUPS);
+
+  assert.deepEqual(absorbed.sort(), ['zm-one', 'zm-three']);
+  assert.deepEqual(
+    entries.map((e) => e.slug),
+    ['alpha', 'zeta-bundle', 'zulu'],
+    'members are gone and the aggregate lands in slug-sorted position',
+  );
+
+  const aggregate = entries.find((e) => e.slug === 'zeta-bundle');
+  assert.equal(aggregate.name, 'Zeta bundle');
+  assert.equal(aggregate.description, 'Three synthetic sibling skills.');
+  assert.equal(aggregate.origin, 'personal');
+  // Union of the absorbed members' runtimes, ordered by SOURCE_PRECEDENCE.
+  assert.deepEqual(aggregate.runtimes, ['claude', 'codex', 'agents']);
+
+  // Non-members pass through untouched.
+  assert.deepEqual(entries.find((e) => e.slug === 'alpha'), input[0]);
+});
+
+test('case 20b: a group that absorbs zero members emits nothing', () => {
+  const input = [merged('alpha', ['claude']), merged('beta', ['codex'])];
+  const { entries, absorbed } = applyAggregates(input, TEST_GROUPS);
+  assert.deepEqual(absorbed, []);
+  assert.deepEqual(entries, input, 'an uninstalled group leaves the list identical');
+  assert.equal(applyAggregates([], TEST_GROUPS).entries.length, 0);
+});
+
+test('case 21: the real AGGREGATE_GROUPS constant pins the Matt Pocock group', () => {
+  const group = AGGREGATE_GROUPS.find((g) => g.slug === 'matt-pocock-skills');
+  assert.ok(group, 'AGGREGATE_GROUPS must contain matt-pocock-skills');
+  assert.equal(group.name, "Matt Pocock's skills");
+  assert.ok(group.description.length > 0);
+  assert.deepEqual(
+    [...group.memberSlugs].sort(),
+    [
+      'code-review',
+      'diagnosing-bugs',
+      'domain-modeling',
+      'grill-me',
+      'grilling',
+      'prototype',
+      'research',
+      'setup-matt-pocock-skills',
+      'tdd',
+      'to-spec',
+      'to-tickets',
+      'wayfinder',
+    ],
+  );
+  assert.equal(group.memberSlugs.length, 12);
+
+  // The real constant is what applyAggregates defaults to.
+  const { entries, absorbed } = applyAggregates([merged('grilling', ['claude', 'codex']), merged('alpha', ['claude'])]);
+  assert.deepEqual(absorbed, ['grilling']);
+  assert.deepEqual(
+    entries.map((e) => e.slug),
+    ['alpha', 'matt-pocock-skills'],
+  );
 });
 
 // ---------------------------------------------------------------------------

@@ -23,7 +23,9 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
 import {
+  AGGREGATE_GROUPS,
   BLOCKLIST,
+  applyAggregates,
   applyBlocklist,
   denylistGate,
   discoverSources,
@@ -229,7 +231,30 @@ export function runSync({
   }
 
   // -- 5. reconciliation ----------------------------------------------------
+  // Deliberately raw-vs-merged: it audits the scan and the merge, and must not
+  // see the publish transform below.
   const reconciliation = reconcile({ rawPostBlocklist: postBlocklistRaw, entries });
+
+  // -- 5b. publish transform ------------------------------------------------
+  // Everything above still scans and gates marketplace roots; only what gets
+  // WRITTEN is narrowed here: personal entries, with aggregate groups collapsed.
+  const personalMerged = entries.filter((e) => e.origin === 'personal');
+  const { entries: published, absorbed } = applyAggregates(personalMerged);
+
+  // Independent recomputation of the emitted-group count, so the assertion below
+  // cannot be satisfied by applyAggregates agreeing with itself.
+  const personalSlugs = new Set(personalMerged.map((e) => e.slug));
+  const emittedGroupCount = AGGREGATE_GROUPS.filter((g) =>
+    g.memberSlugs.some((slug) => personalSlugs.has(slug)),
+  ).length;
+  const expectedPublished = personalMerged.length - absorbed.length + emittedGroupCount;
+  if (published.length !== expectedPublished) {
+    error(
+      `publish transform FAILED: ${published.length} published entries != ` +
+        `${personalMerged.length} personal - ${absorbed.length} absorbed + ${emittedGroupCount} aggregate(s)`,
+    );
+    return EXIT_FAILED;
+  }
 
   // -- 6. serialize ---------------------------------------------------------
   const { writePath, previousPath } = resolveSyncPaths({ cwd, out: options.out });
@@ -242,8 +267,8 @@ export function runSync({
       previous = null; // a corrupt previous file simply loses the diff baseline
     }
   }
-  const json = toStableJson(entries, previousJson);
-  const diff = diffEntries(previous?.entries, entries);
+  const json = toStableJson(published, previousJson);
+  const diff = diffEntries(previous?.entries, published);
 
   // -- 7. report ------------------------------------------------------------
   log('Scan roots (raw pre-blocklist counts; expected figures are provenance only):');
@@ -282,6 +307,13 @@ export function runSync({
   log(`  duplicates collapsed   ${postBlocklistRaw.length - entries.length}`);
   log(`  entries                ${entries.length} (${personalEntries} personal)`);
   log(`  personal raw instances ${personalRaw}`);
+  log(
+    `  published: ${published.length} personal entries ` +
+      `(${entries.length - personalEntries} marketplace entries scanned but not published)`,
+  );
+  if (absorbed.length > 0) {
+    log(`  aggregated: ${absorbed.length} entries into ${emittedGroupCount} group(s)`);
+  }
   log('  point-in-time reference (2026-08-16): 84 scanned, 60 entries, 26 personal, 41 personal instances');
   if (!reconciliation.ok) {
     error('reconciliation FAILED:');
