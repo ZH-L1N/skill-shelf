@@ -1,0 +1,84 @@
+# Hand-written layer over data/generated.json. Two namespaces:
+#
+#   skills:   keyed by the scanned slug (or a manual: true card with no scan)
+#   projects: fully manual; keys are independent of skill slugs
+#
+# Every rendered card needs a `description` of <= 140 characters — the scanned
+# frontmatter is LLM routing text, not card copy. `status` defaults to active.
+# `images:` filenames resolve against src/showcase/.
+
+skills:
+  adversarial-plan-review:
+    category: dev-workflow
+    description: "Stress-tests a plan by pitting me as planner against an independent reviewer model, looping severity-tagged critique until it holds."
+
+  hallmark:
+    category: design-visual
+    description: "Anti-AI-slop design skill. Pushes for structural variety, so two pages it builds read as different sites, not recolored templates."
+
+  hatch-pet:
+    category: design-visual
+    description: "Turns character art or a brand cue into an animated Codex pet: 8x11 atlas, 9 animation rows, 16 look directions, QA artifacts."
+
+  herdr:
+    category: agent-orchestration
+    description: "Lets an agent drive Herdr from inside its own pane: inspect neighbors, start agents, read output, wait on lifecycle states."
+
+  herdr-workspace-policy:
+    category: agent-orchestration
+    description: "The constitution for multi-agent herdr work: one hub, many spokes, a strict message envelope, and explicit delegation rights."
+
+  matt-pocock-skills:
+    category: curated-picks
+    repo: https://github.com/mattpocock/skills
+    description: "The engineering-workflow set by Matt Pocock, as one card: wayfinder, to-spec, to-tickets, TDD, code review, prototyping, research."
+
+  minimal-editorial-poster:
+    category: design-visual
+    description: "Generates sparse paper-texture posters: dominant negative space, one content-derived visual event, and a single chromatic anchor."
+
+  photo-anchored-zine:
+    category: design-visual
+    description: "Builds tactile zines from your own photos, letting truthful cropped fragments meet illustration across a torn-paper handoff."
+
+  pr-loop:
+    category: dev-workflow
+    description: "Opens a PR and stays on it until mergeable: watches CI, fixes failures, answers every review thread. A human still presses merge."
+
+  proj-init:
+    category: dev-workflow
+    description: "Bootstraps a repo's CLAUDE.md and planning workflow, so every project I start carries the same conventions from commit one."
+
+  review-crew:
+    category: dev-workflow
+    description: "Spins up a disposable review crew — specialist subagents plus a cross-vendor lens — into one deduplicated fix-or-refute list."
+
+  semantic-zine-distillation:
+    category: design-visual
+    description: "Makes a zine from a photo without sending the pixels anywhere: local inspection, then text-only, identity-stripped distillation."
+
+  ship:
+    category: dev-workflow
+    description: "One trigger, whole pipeline: spec, plan, adversarial review, implementation, multi-lens review, tests, docs, commit, push."
+
+  text-to-lottie:
+    category: design-visual
+    description: "Authors production-ready Lottie JSON for the Skia Skottie player: logo and type reveals, loaders, UI microinteractions, scenes."
+
+  xiaowang-illustration:
+    category: design-visual
+    description: "A personal-IP illustration system for the Xiao Wang character: canonical sheets driving social covers, keyframes, avatars, stickers."
+
+  # Manual aggregate card — no scanned counterpart, so it needs manual: true.
+  superpowers:
+    manual: true
+    category: curated-picks
+    repo: https://github.com/obra/superpowers
+    description: "Obra's plugin, and the four of its skills I lean on daily: brainstorming, writing-skills, systematic-debugging, TDD."
+
+projects:
+  herdr:
+    name: herdr
+    # No repo key yet — herdr's repository is private. Add the link here once
+    # it is public.
+    description: "A terminal multiplexer that recognizes coding agents in panes, organizes them into tabs and workspaces, and exposes them to a CLI."
