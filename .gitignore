@@ -5,3 +5,10 @@ dist/
 .env.*
 !.env.example
 .DS_Store
+.scratch/
+.astro-tmp/
+
+# Belt and braces: the denylist and its sync digest live outside the repo and
+# must never be committed even if one is copied in by accident.
+.last-sync
+denylist.txt

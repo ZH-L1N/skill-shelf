@@ -1,0 +1,21 @@
+{
+  "name": "skill-shelf",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "sync": "node scripts/sync.mjs",
+    "test": "node --test",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^7.2.2",
+    "yaml": "^2.9.0"
+  }
+}
