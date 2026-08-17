@@ -12,3 +12,4 @@ dist/
 # must never be committed even if one is copied in by accident.
 .last-sync
 denylist.txt
+.hallmark/

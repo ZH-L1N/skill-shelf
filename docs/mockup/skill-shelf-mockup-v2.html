@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skill Shelf — variant B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f%5B%5D=satoshi@700,900&display=swap" rel="stylesheet">
+<style>
+/* Hallmark · genre: playful · macrostructure: Portfolio Grid · theme: Hum-adjacent (cream grid-paper, golden accent) · enrichment: none — CSS grid-paper ground only · nav: N2 floating chip (static, left-biased) · footer: Ft5 statement line */
+/* Hallmark · pre-emit critique: P5 H4 E5 S4 R5 V5 · v2: real images wired */
+/* Mockup-only artifact (variant B, design-selection gate). Every card carries an
+   honest labeled image placeholder — no artwork exists yet. The single dashed
+   gate-note in the hero (oil-motion slot) is a gate artifact and is OMITTED from
+   production markup. */
+
+:root {
+  /* color — cream paper, one golden accent hue (85), nothing pure black or white */
+  --color-paper:       oklch(96.5% 0.015 95);
+  --color-grid:        oklch(92% 0.012 95);
+  --color-card:        oklch(98.5% 0.006 95);
+  --color-paper-2:     oklch(94% 0.016 95);
+  --color-rule:        oklch(88% 0.014 95);
+  --color-faint:       oklch(68% 0.010 85);
+  --color-neutral:     oklch(52% 0.012 85);
+  --color-muted:       oklch(40% 0.013 82);
+  --color-ink:         oklch(22% 0.015 80);
+  --color-accent:      oklch(75% 0.14 85);
+  --color-accent-deep: oklch(48% 0.13 85);
+  --color-focus:       oklch(48% 0.13 85);
+  --color-shadow-a:    oklch(22% 0.015 80 / 0.06);
+  --color-shadow-b:    oklch(22% 0.015 80 / 0.09);
+
+  /* type — Satoshi display 700 · Plus Jakarta Sans body · Space Mono = metadata register only */
+  --font-display: "Satoshi", ui-sans-serif, system-ui, sans-serif;
+  --font-body:    "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-meta:    "Space Mono", ui-monospace, monospace;
+
+  --text-xs:   0.75rem;
+  --text-sm:   0.8125rem;
+  --text-base: 1rem;
+  --text-md:   1.125rem;
+  --text-lg:   1.375rem;
+  --text-xl:   1.75rem;
+  --text-2xl:  2.25rem;
+  --text-3xl:  clamp(2.25rem, 4.2vw + 0.9rem, 3.5rem);
+
+  /* space — 4pt scale */
+  --space-2xs: 0.25rem;
+  --space-xs:  0.5rem;
+  --space-sm:  0.75rem;
+  --space-md:  1rem;
+  --space-lg:  1.5rem;
+  --space-xl:  2.5rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+
+  /* form */
+  --radius-card: 15px;
+  --radius-chip: 999px;
+  --radius-sm:   6px;
+  --rule-hair:   1px solid var(--color-rule);
+  --measure:     60ch;
+  --grid-cell:   24px;
+
+  /* motion */
+  --ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-micro: 140ms;
+
+  --shadow-whisper: 0 1px 2px var(--color-shadow-a), 0 10px 28px var(--color-shadow-b);
+}
+
+html { overflow-x: clip; }
+body {
+  overflow-x: clip;
+  margin: 0;
+  background-color: var(--color-paper);
+  background-image:
+    repeating-linear-gradient(to right, var(--color-grid) 0 1px, transparent 1px var(--grid-cell)),
+    repeating-linear-gradient(to bottom, var(--color-grid) 0 1px, transparent 1px var(--grid-cell));
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.6;
+}
+* { box-sizing: border-box; }
+
+h1, h2, h3, h4 { font-style: normal; }
+
+a {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--color-rule);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color var(--dur-micro) var(--ease-out);
+}
+a:hover { text-decoration-color: var(--color-accent); }
+:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+
+.wrap { max-width: 74rem; margin-inline: auto; padding-inline: var(--space-lg); }
+
+/* ---- nav · N2 floating chip, parked left ---- */
+.nav {
+  display: flex;
+  padding-block: var(--space-lg) 0;
+}
+.chip {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-lg);
+  background: var(--color-card);
+  border: var(--rule-hair);
+  border-radius: var(--radius-chip);
+  padding: var(--space-xs) var(--space-lg);
+  box-shadow: 0 1px 2px var(--color-shadow-a);
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-base);
+  letter-spacing: -0.015em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.chip ul { display: flex; gap: var(--space-md); list-style: none; margin: 0; padding: 0; }
+.chip a { font-size: var(--text-base); white-space: nowrap; }
+
+/* ---- hero · left-biased, friendly, not full-height ---- */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+  gap: var(--space-2xl);
+  align-items: start;
+  padding-block: var(--space-2xl) var(--space-3xl);
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-3xl);
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  overflow-wrap: anywhere;
+  min-width: 0;
+  margin: 0 0 var(--space-md);
+  max-width: 15ch;
+}
+.inventory-line {
+  font-family: var(--font-meta);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-neutral);
+  margin: 0 0 var(--space-lg);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.byline {
+  margin: 0;
+  max-width: var(--measure);
+  color: var(--color-muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.byline a { font-weight: 700; }
+
+/* gate-only annotation — never shipped to production */
+.gate-note {
+  border: 1px dashed var(--color-faint);
+  border-radius: var(--radius-card);
+  background: transparent;
+  padding: var(--space-md);
+  color: var(--color-neutral);
+  font-size: var(--text-base);
+  margin-top: var(--space-lg);
+  max-width: 62ch;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.gate-note .tag {
+  display: block;
+  font-family: var(--font-meta);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-accent-deep);
+  margin-bottom: var(--space-2xs);
+}
+.hero .slot { margin-top: var(--space-md); }
+.hero .slot .gate-note { margin-top: 0; }
+
+/* ---- shelf sections ---- */
+.shelf { padding-block: 0 var(--space-2xl); }
+.shelf > h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-xl);
+  letter-spacing: -0.025em;
+  margin: 0 0 var(--space-xl);
+}
+.category { margin-bottom: var(--space-2xl); }
+
+/* section head stacks vertically — mark, then name, then count */
+.category-head { margin-bottom: var(--space-lg); }
+.category-mark {
+  display: block;
+  width: 22px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--color-accent);
+  margin-bottom: var(--space-sm);
+}
+.category-head h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--space-2xs);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.category-head .count {
+  display: block;
+  font-family: var(--font-meta);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-neutral);
+}
+
+/* ---- card grid · 3-up desktop ---- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-lg);
+}
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--color-card);
+  border: var(--rule-hair);
+  border-radius: var(--radius-card);
+  padding: var(--space-sm);
+  transition: box-shadow var(--dur-micro) var(--ease-out);
+}
+.card:hover { box-shadow: var(--shadow-whisper); }
+
+/* honest labeled placeholder — square, fills the card width */
+.thumb {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+  background: var(--color-paper-2);
+  border-radius: calc(var(--radius-card) - 6px);
+  padding: var(--space-md);
+  min-width: 0;
+}
+.thumb-label {
+  font-family: var(--font-meta);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-neutral);
+  text-align: center;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+/* real showcase imagery — same aspect box, image fills it edge to edge */
+.thumb--image { padding: 0; overflow: hidden; }
+.thumb-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: inherit;
+}
+/* logo marks on white — never crop, sit on the placeholder ground */
+.thumb-img--contain {
+  object-fit: contain;
+  background: var(--color-paper-2);
+  padding: var(--space-md);
+}
+/* oiloil homage — quiet dotted index numeral, one per card corner */
+.index {
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--space-xs);
+  font-family: var(--font-meta);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-faint);
+  border: 1px dotted var(--color-faint);
+  border-radius: var(--radius-sm);
+  padding: 0 var(--space-2xs);
+  line-height: 1.6;
+}
+
+.card-body { padding: var(--space-md) var(--space-sm) var(--space-xs); min-width: 0; }
+.card h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-md);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin: 0 0 var(--space-xs);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.card p {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: var(--text-base);
+  line-height: 1.55;
+  max-width: 46ch;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+  list-style: none;
+  margin: var(--space-md) 0 0;
+  padding: 0;
+}
+.badge {
+  font-family: var(--font-meta);
+  font-size: var(--text-xs);
+  color: var(--color-neutral);
+  background: var(--color-paper-2);
+  border-radius: var(--radius-chip);
+  padding: var(--space-2xs) var(--space-xs);
+  white-space: nowrap;
+}
+.repo {
+  display: inline-block;
+  margin-top: var(--space-sm);
+  font-family: var(--font-meta);
+  font-size: var(--text-xs);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+/* ---- project · the deliberate asymmetry, image-led and wide ---- */
+.project {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: var(--space-xl);
+  align-items: center;
+  background: var(--color-card);
+  border: var(--rule-hair);
+  border-radius: var(--radius-card);
+  padding: var(--space-sm);
+  transition: box-shadow var(--dur-micro) var(--ease-out);
+}
+.project:hover { box-shadow: var(--shadow-whisper); }
+.project .thumb { aspect-ratio: 16 / 10; }
+.project-body { padding: var(--space-md) var(--space-lg) var(--space-lg) var(--space-sm); min-width: 0; }
+.project .kind {
+  display: block;
+  font-family: var(--font-meta);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-neutral);
+  margin-bottom: var(--space-sm);
+}
+.project h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-2xl);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin: 0 0 var(--space-sm);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.project p {
+  margin: 0;
+  max-width: var(--measure);
+  color: var(--color-muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+/* ---- footer · Ft5 statement line ---- */
+.foot {
+  border-top: var(--rule-hair);
+  padding-block: var(--space-xl) var(--space-2xl);
+}
+.foot .statement {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--space-sm);
+  max-width: 24ch;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.foot p.meta-line {
+  margin: 0;
+  font-size: var(--text-base);
+  color: var(--color-neutral);
+  max-width: 62ch;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.foot a { white-space: nowrap; }
+.foot .meta { font-family: var(--font-meta); font-size: var(--text-sm); }
+
+/* ---- responsive · 3-up → 2-up → 1-up ---- */
+@media (max-width: 900px) {
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 768px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-lg);
+    padding-block: var(--space-xl) var(--space-2xl);
+  }
+  .hero h1 { max-width: 20ch; }
+  .project { grid-template-columns: minmax(0, 1fr); gap: var(--space-md); }
+  .project-body { padding: var(--space-xs) var(--space-sm) var(--space-md); }
+}
+@media (max-width: 600px) {
+  .grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 414px) {
+  .wrap { padding-inline: var(--space-md); }
+  .chip { gap: var(--space-sm); padding-inline: var(--space-md); }
+  .chip ul { gap: var(--space-sm); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 1ms !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<nav class="nav" aria-label="Main">
+  <div class="chip">
+    <a class="wordmark" href="#">Skill Shelf</a>
+    <ul>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="https://github.com/ZH-L1N" rel="me">GitHub&#8239;&#8599;</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div>
+    <h1>A personal shelf of agent skills.</h1>
+    <p class="inventory-line">16 skills · 1 project · synced 2026-08-16</p>
+    <p class="byline">Built, collected, and used daily by <a href="https://github.com/ZH-L1N">ZH-L1N</a> across Claude&nbsp;Code, Codex, and the agents runtime.</p>
+  </div>
+  <div class="slot">
+    <div class="gate-note">
+      <span class="tag">oil-motion slot — mockup only</span>
+      An interactive animation from the oil-motion workspace lands here later. Production markup omits this box entirely until the animation exists; the hero simply narrows to one column.
+    </div>
+  </div>
+</header>
+
+<main id="skills" class="shelf">
+  <h2>Skills</h2>
+
+  <section class="category">
+    <div class="category-head">
+      <span class="category-mark"></span>
+      <h3>Dev Workflow</h3>
+      <span class="count">5 skills</span>
+    </div>
+    <div class="grid">
+
+      <article class="card">
+        <div class="thumb">
+          <span class="thumb-label">illustration · codex-gen later</span>
+          <span class="index">01</span>
+        </div>
+        <div class="card-body">
+          <h4>adversarial-plan-review</h4>
+          <p>Stress-tests a plan by pitting me as planner against an independent reviewer model, looping severity-tagged critique until it holds.</p>
+          <ul class="badges"><li class="badge">claude</li></ul>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="thumb">
+          <span class="thumb-label">illustration · codex-gen later</span>
+          <span class="index">02</span>
+        </div>
+        <div class="card-body">
+          <h4>pr-loop</h4>
+          <p>Opens a PR and stays on it until mergeable: watches CI, fixes failures, answers every review thread. A human still presses merge.</p>
+          <ul class="badges"><li class="badge">claude</li><li class="badge">codex</li></ul>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="thumb">
+          <span class="thumb-label">illustration · codex-gen later</span>
+          <span class="index">03</span>
+        </div>
+        <div class="card-body">
+          <h4>proj-init</h4>
+          <p>Bootstraps a repo&rsquo;s CLAUDE.md and planning workflow, so every project I start carries the same conventions from commit one.</p>
+          <ul class="badges"><li class="badge">claude</li><li class="badge">codex</li></ul>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="thumb">
+          <span class="thumb-label">illustration · codex-gen later</span>
+          <span class="index">04</span>
+        </div>
+        <div class="card-body">
+          <h4>review-crew</h4>
+          <p>Spins up a disposable review crew — specialist subagents plus a cross-vendor lens — into one deduplicated fix-or-refute list.</p>
+          <ul class="badges"><li class="badge">claude</li><li class="badge">codex</li></ul>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="thumb">
+          <span class="thumb-label">illustration · codex-gen later</span>
+          <span class="index">05</span>
+        </div>
+        <div class="card-body">
+          <h4>ship</h4>
+          <p>One trigger, whole pipeline: spec, plan, adversarial review, implementation, multi-lens review, tests, docs, commit, push.</p>
+          <ul class="badges"><li class="badge">claude</li></ul>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="category">
+    <div class="category-head">
+      <span class="category-mark"></span>
+      <h3>Agent Orchestration</h3>
+      <span class="count">2 skills</span>
+    </div>
+    <div class="grid">
+
+      <article class="card">
+        <div class="thumb">
+          <span class="thumb-label">illustration · codex-gen later</span>
+          <span class="index">06</span>
+        </div>
+        <div class="card-body">
+          <h4>herdr</h4>
+          <p>Lets an agent drive Herdr from inside its own pane: inspect neighbors, start agents, read output, wait on lifecycle states.</p>
+          <ul class="badges"><li class="badge">claude</li><li class="badge">codex</li></ul>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="thumb">
+          <span class="thumb-label">illustration · codex-gen later</span>
+          <span class="index">07</span>
+        </div>
+        <div class="card-body">
+          <h4>herdr-workspace-policy</h4>
+          <p>The constitution for multi-agent herdr work: one hub, many spokes, a strict message envelope, and explicit delegation rights.</p>
+          <ul class="badges"><li class="badge">claude</li><li class="badge">codex</li></ul>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="category">
+    <div class="category-head">
+      <span class="category-mark"></span>
+      <h3>Design &amp; Visual</h3>
+      <span class="count">7 skills</span>
+    </div>
+    <div class="grid">
+
+      <article class="card">
+        <div class="thumb thumb--image">
+          <img class="thumb-img" src="../../src/showcase/hallmark.png" alt="Hallmark sample pages — upstream OG image">
+          <span class="index">08</span>
+        </div>
+        <div class="card-body">
+          <h4>hallmark</h4>
+          <p>Anti-AI-slop design skill. Pushes for structural variety, so two pages it builds read as different sites, not recolored templates.</p>
+          <ul class="badges"><li class="badge">claude</li><li class="badge">codex</li></ul>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="thumb">
+          <span class="thumb-label">illustration · codex-gen later</span>
+          <span class="index">09</span>
+        </div>
+        <div class="card-body">
+          <h4>hatch-pet</h4>
+          <p>Turns character art or a brand cue into an animated Codex pet: 8×11 atlas, 9 animation rows, 16 look directions, QA artifacts.</p>
+          <ul class="badges"><li class="badge">codex</li></ul>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="thumb">
+          <span class="thumb-label">image pending source confirmation</span>
+          <span class="index">10</span>
+        </div>
+        <div class="card-body">
+          <h4>minimal-editorial-poster</h4>
+          <p>Generates sparse paper-texture posters: dominant negative space, one content-derived visual event, and a single chromatic anchor.</p>
+          <ul class="badges"><li class="badge">agents</li></ul>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="thumb thumb--image">
+          <img class="thumb-img" src="../../src/showcase/photo-anchored-zine.jpg" alt="Photo-anchored zine — ancient tree spread">
+          <span class="index">11</span>
+        </div>
+        <div class="card-body">
+          <h4>photo-anchored-zine</h4>
+          <p>Builds tactile zines from your own photos, letting truthful cropped fragments meet illustration across a torn-paper handoff.</p>
+          <ul class="badges"><li class="badge">agents</li></ul>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="thumb thumb--image">
+          <img class="thumb-img" src="../../src/showcase/semantic-zine-distillation.jpg" alt="Semantic zine distillation — After the Light">
+          <span class="index">12</span>
+        </div>
+        <div class="card-body">
+          <h4>semantic-zine-distillation</h4>
+          <p>Makes a zine from a photo without sending the pixels anywhere: local inspection, then text-only, identity-stripped distillation.</p>
+          <ul class="badges"><li class="badge">agents</li></ul>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="thumb">
+          <span class="thumb-label">illustration · codex-gen later</span>
+          <span class="index">13</span>
+        </div>
+        <div class="card-body">
+          <h4>text-to-lottie</h4>
+          <p>Authors production-ready Lottie JSON for the Skia Skottie player: logo and type reveals, loaders, UI microinteractions, scenes.</p>
+          <ul class="badges"><li class="badge">claude</li><li class="badge">codex</li></ul>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="thumb thumb--image">
+          <img class="thumb-img" src="../../src/showcase/xiaowang-illustration.jpg" alt="Xiao Wang illustration sample — Xiaohongshu cover">
+          <span class="index">14</span>
+        </div>
+        <div class="card-body">
+          <h4>xiaowang-illustration</h4>
+          <p>A personal-IP illustration system for the Xiao Wang character: canonical sheets driving social covers, keyframes, avatars, stickers.</p>
+          <ul class="badges"><li class="badge">codex</li></ul>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="category">
+    <div class="category-head">
+      <span class="category-mark"></span>
+      <h3>Curated Picks</h3>
+      <span class="count">2 skills</span>
+    </div>
+    <div class="grid">
+
+      <article class="card">
+        <div class="thumb thumb--image">
+          <img class="thumb-img" src="../../src/showcase/matt-pocock-skills.png" alt="AI Skills for Real Engineers — upstream banner">
+          <span class="index">15</span>
+        </div>
+        <div class="card-body">
+          <h4>matt-pocock-skills</h4>
+          <p>The engineering-workflow set by Matt Pocock, as one card: wayfinder, to-spec, to-tickets, TDD, code review, prototyping, research.</p>
+          <ul class="badges"><li class="badge">claude</li><li class="badge">codex</li></ul>
+          <a class="repo" href="https://github.com/mattpocock/skills">mattpocock/skills&#8239;&#8599;</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="thumb thumb--image">
+          <img class="thumb-img thumb-img--contain" src="../../src/showcase/superpowers.png" alt="Superpowers logo mark">
+          <span class="index">16</span>
+        </div>
+        <div class="card-body">
+          <h4>superpowers</h4>
+          <p>Obra&rsquo;s plugin, and the four of its skills I lean on daily: brainstorming, writing-skills, systematic-debugging, TDD.</p>
+          <ul class="badges"><li class="badge">plugin</li></ul>
+          <a class="repo" href="https://github.com/obra/superpowers">obra/superpowers&#8239;&#8599;</a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+</main>
+
+<section id="projects" class="shelf">
+  <h2>Projects</h2>
+  <article class="project">
+    <div class="thumb thumb--image">
+      <img class="thumb-img" src="../../src/showcase/herdr.png" alt="herdr — terminal multiplexer for coding agents">
+    </div>
+    <div class="project-body">
+      <span class="kind">Project · built on herdr</span>
+      <h3>herdr</h3>
+      <p>A terminal multiplexer that recognizes coding agents in panes, organizes them into tabs and workspaces, and exposes them to a CLI. The herdr skill and workspace policy above are built on it.</p>
+      <a class="repo" href="https://github.com/herdrdev/herdr">herdrdev/herdr&#8239;&#8599;</a>
+    </div>
+  </article>
+</section>
+
+<footer class="foot">
+  <p class="statement">A shelf, not a marketplace.</p>
+  <p class="meta-line">© 2026 <a href="https://github.com/ZH-L1N">ZH-L1N</a> · inventory generated by <span class="meta">scripts/sync.mjs</span> · built with Astro</p>
+</footer>
+
+</div>
+
+</body>
+</html>

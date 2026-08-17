@@ -15,6 +15,8 @@ skills:
   hallmark:
     category: design-visual
     description: "Anti-AI-slop design skill. Pushes for structural variety, so two pages it builds read as different sites, not recolored templates."
+    repo: https://github.com/Nutlope/hallmark
+    images: [hallmark.png]
 
   hatch-pet:
     category: design-visual
@@ -32,6 +34,7 @@ skills:
     category: curated-picks
     repo: https://github.com/mattpocock/skills
     description: "The engineering-workflow set by Matt Pocock, as one card: wayfinder, to-spec, to-tickets, TDD, code review, prototyping, research."
+    images: [matt-pocock-skills.png]
 
   minimal-editorial-poster:
     category: design-visual
@@ -40,6 +43,7 @@ skills:
   photo-anchored-zine:
     category: design-visual
     description: "Builds tactile zines from your own photos, letting truthful cropped fragments meet illustration across a torn-paper handoff."
+    images: [photo-anchored-zine.jpg]
 
   pr-loop:
     category: dev-workflow
@@ -56,6 +60,7 @@ skills:
   semantic-zine-distillation:
     category: design-visual
     description: "Makes a zine from a photo without sending the pixels anywhere: local inspection, then text-only, identity-stripped distillation."
+    images: [semantic-zine-distillation.jpg]
 
   ship:
     category: dev-workflow
@@ -68,6 +73,8 @@ skills:
   xiaowang-illustration:
     category: design-visual
     description: "A personal-IP illustration system for the Xiao Wang character: canonical sheets driving social covers, keyframes, avatars, stickers."
+    repo: https://github.com/ZH-L1N/xiaowang-illustration
+    images: [xiaowang-illustration.jpg]
 
   # Manual aggregate card — no scanned counterpart, so it needs manual: true.
   superpowers:
@@ -75,10 +82,14 @@ skills:
     category: curated-picks
     repo: https://github.com/obra/superpowers
     description: "Obra's plugin, and the four of its skills I lean on daily: brainstorming, writing-skills, systematic-debugging, TDD."
+    images: [superpowers.png]
 
 projects:
   herdr:
     name: herdr
-    # No repo key yet — herdr's repository is private. Add the link here once
-    # it is public.
+    # herdr is a third-party tool (herdrdev/herdr); the herdr skill and
+    # workspace policy in the Skills grid are built on it.
+    repo: https://github.com/herdrdev/herdr
     description: "A terminal multiplexer that recognizes coding agents in panes, organizes them into tabs and workspaces, and exposes them to a CLI."
+    notes: "The herdr skill and workspace policy above are built on it."
+    images: [herdr.png]
