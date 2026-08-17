@@ -1,0 +1,6 @@
+# Timeline
+
+<!-- Grammar: - YYYY-MM-DD HH:MM | <version|—> | <shipped|decided|hardware|deprecated|note> | <one-line summary> [| temp: <intent note>] [| supersedes: <YYYY-MM-DD|version>] -->
+<!-- - YYYY-MM-DD HH:MM | vX.Y.Z | shipped | <one-line summary of what shipped> -->
+
+- 2026-08-16 21:10 | v0.1.0 | shipped | Skill Shelf MVP: sync pipeline + personal-only data + variant-B Astro site with real showcase imagery, zero client JS, CI; Cloudflare Pages connection handed to Zehui

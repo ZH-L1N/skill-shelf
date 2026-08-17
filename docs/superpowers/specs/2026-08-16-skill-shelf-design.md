@@ -47,8 +47,10 @@ Keyed by slug; any field here wins over the generated value. Adds:
 - `status` — `active` | `trying` | `archived` (entries without an override
   default to `active`)
 - `repo` — GitHub URL if the skill/project has one
-- `images` — showcase image paths under `public/showcase/` (for image-generating
-  skills such as xiaowang-illustration, text-to-lottie, zine/poster skills)
+- `images` — showcase image paths (for image-generating skills such as
+  xiaowang-illustration, text-to-lottie, zine/poster skills).
+  *Superseded by plans/v0.1.0-skill-shelf.md, Deviation #2: images live under
+  `src/showcase/` so `astro:assets` optimizes them; `public/` ships verbatim.*
 - `hidden: true` — exclude an entry from the site without deleting data
 - Fully manual entries (skills that were never installed locally, and projects
   like herdr) live here too, with `type: project` distinguishing repos/apps
@@ -59,8 +61,11 @@ Keyed by slug; any field here wins over the generated value. Adds:
 `scripts/sync.mjs` (Node — same toolchain as Astro). Local-machine only; CI
 never runs it because it reads the user's home directory.
 
-1. Scan `~/.claude/skills/*`, `~/.claude/plugins/cache/*/*/*/skills/*`,
-   `~/.codex/skills/*`, `~/.agents/skills/*`
+1. Scan `~/.claude/skills/*`, `~/.codex/skills/*`, `~/.agents/skills/*`,
+   plus plugin skills. *Superseded by plans/v0.1.0-skill-shelf.md,
+   Deviation #1: plugin roots come from
+   `~/.claude/plugins/installed_plugins.json` (the authoritative manifest),
+   not the raw cache glob — the cache holds multiple unsortable versions.*
 2. Parse each SKILL.md frontmatter for name/description
 3. Merge cross-runtime duplicates by slug into one entry with combined
    `runtimes`
