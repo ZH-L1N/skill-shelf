@@ -154,6 +154,38 @@ const favicon =
         </p>
       </footer>
     </div>
+
+    <dialog id="lightbox" class="lightbox" aria-label="Enlarged showcase image">
+      <img class="lightbox-img" src="" alt="" />
+    </dialog>
+
+    <script is:inline>
+      // Lightbox — the spec's sanctioned "small client-side enhancement":
+      // thumbnails enlarge in place instead of navigating to the raw image
+      // URL. Click anywhere (or Esc) dismisses; no history entries are
+      // created. Without JS the <a> links keep their original
+      // navigate-to-image behavior, so this degrades cleanly.
+      (function () {
+        var box = document.getElementById('lightbox');
+        if (!box || !box.showModal) return; // ancient browser → keep links
+        var pic = box.querySelector('.lightbox-img');
+        document.addEventListener('click', function (e) {
+          var link = e.target.closest && e.target.closest('a.thumb--image');
+          if (link) {
+            e.preventDefault();
+            var thumb = link.querySelector('img');
+            pic.src = link.href;
+            pic.alt = thumb ? thumb.alt : '';
+            box.showModal();
+            return;
+          }
+          if (box.open) box.close(); // backdrop, image, anywhere: dismiss
+        });
+        box.addEventListener('close', function () {
+          pic.removeAttribute('src');
+        });
+      })();
+    </script>
   </body>
 </html>
 
@@ -696,6 +728,38 @@ const favicon =
       gap: var(--space-sm);
     }
   }
+  /* ---- lightbox · dialog enhancement over the plain full-size links ---- */
+  .thumb--image {
+    cursor: zoom-in;
+  }
+  .lightbox {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    max-width: none;
+    max-height: none;
+    cursor: zoom-out;
+  }
+  .lightbox[open] {
+    display: grid;
+    place-items: center;
+  }
+  .lightbox-img {
+    max-width: min(92vw, 72rem);
+    max-height: 88vh;
+    width: auto;
+    height: auto;
+    display: block;
+    border-radius: 14px;
+    box-shadow: var(--shadow-whisper);
+  }
+  .lightbox::backdrop {
+    /* Mirrors --color-ink at 55% alpha — ::backdrop custom-property
+       inheritance is not yet universal, so the literal stays (change with
+       the token). */
+    background: oklch(21% 0.014 70 / 0.55);
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

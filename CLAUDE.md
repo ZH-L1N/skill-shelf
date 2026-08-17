@@ -43,8 +43,10 @@ Two-layer data model merged at build time by `src/lib/entries.mjs`
   ≤140-char card copy, repo, images, `manual: true` cards) and `projects:`.
 - `src/showcase/` — committed card images, optimized via `astro:assets`.
 - `src/pages/index.astro` owns the whole design system (variant-B tokens);
-  components render purely from catalog data. Zero client JS; the three
-  approved micro-interactions are CSS-only.
+  components render purely from catalog data. Client JS is exactly ONE
+  sanctioned inline script — the `<dialog>` lightbox (enlarge in place,
+  click-anywhere/Esc dismiss, degrades to plain image links without JS);
+  the three approved micro-interactions are CSS-only.
 
 Deploys as pure static output via Cloudflare Pages connected to this repo
 (push to `main` → auto build; see `docs/deploy.md`). No server, no backend.
