@@ -1,0 +1,22 @@
+# CI: unit tests + build smoke. This workflow must NEVER run `npm run sync` —
+# sync reads the local machine's home directory and its denylist file does not
+# exist here (by design; see CLAUDE.md gotchas).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
