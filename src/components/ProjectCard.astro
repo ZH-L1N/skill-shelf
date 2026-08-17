@@ -1,0 +1,46 @@
+---
+/**
+ * One project card — the deliberate asymmetry of the page: wider, image-led,
+ * no runtime badges. Text-only when the entry carries no showcase image.
+ */
+import { Image } from 'astro:assets';
+
+const { project, image = null, contain = false } = Astro.props;
+
+function repoLabel(url) {
+  try {
+    return new URL(url).pathname.replace(/^\/+|\/+$/g, '') || url;
+  } catch {
+    return url;
+  }
+}
+---
+
+<article class:list={['project', !image && 'project--text']}>
+  {
+    image && (
+      <a class="thumb thumb--image" href={image.src}>
+        <Image
+          class:list={['thumb-img', contain && 'thumb-img--contain']}
+          src={image}
+          widths={[640, 1024]}
+          sizes="(min-width: 768px) 40rem, 92vw"
+          alt={`${project.name} — showcase image`}
+        />
+      </a>
+    )
+  }
+  <div class="project-body">
+    <span class="kind">Project</span>
+    <h3>{project.name}</h3>
+    <p>{project.description}</p>
+    {project.notes && <p class="notes">{project.notes}</p>}
+    {
+      project.repo && (
+        <a class="repo" href={project.repo}>
+          {`${repoLabel(project.repo)} ↗`}
+        </a>
+      )
+    }
+  </div>
+</article>

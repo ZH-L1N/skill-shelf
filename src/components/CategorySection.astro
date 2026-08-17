@@ -1,0 +1,31 @@
+---
+/**
+ * One category block: gold mark, name, count, then the card grid.
+ * `cards` arrive pre-shaped from `index.astro` (entry + resolved image +
+ * running index) so the showcase glob stays in a single module.
+ */
+import SkillCard from './SkillCard.astro';
+
+const { name, cards } = Astro.props;
+const count = cards.length;
+---
+
+<section class="category">
+  <div class="category-head">
+    <span class="category-mark"></span>
+    <h3>{name}</h3>
+    <span class="count">{`${count} ${count === 1 ? 'skill' : 'skills'}`}</span>
+  </div>
+  <div class="grid">
+    {
+      cards.map((card) => (
+        <SkillCard
+          entry={card.entry}
+          image={card.image}
+          contain={card.contain}
+          index={card.index}
+        />
+      ))
+    }
+  </div>
+</section>

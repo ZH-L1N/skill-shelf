@@ -1,0 +1,40 @@
+---
+/**
+ * Hero — headline, inventory line, byline. No bio (Task 5 gate decision) and
+ * no oil-motion placeholder box (mockup-only artifact).
+ *
+ * The hero stays a grid with a single production column so the future
+ * oil-motion region can be reintroduced by uncommenting one rule in
+ * index.astro plus the slot markup below — no restructuring required.
+ *
+ * The inventory numbers count up via a registered custom property
+ * (`--tally`), so the animation is pure CSS. Both the animated value and the
+ * static fallback resolve from the same inline `--tally-to`, which means the
+ * final rendered number is correct even where `@property` is unsupported or
+ * motion is reduced.
+ *
+ * Every run of literal text is emitted from an expression, so the JSX
+ * whitespace rules of `compressHTML: 'jsx'` cannot eat a separating space.
+ */
+const { skillCount, projectCount, syncedOn } = Astro.props;
+
+const skillWord = skillCount === 1 ? 'skill' : 'skills';
+const projectWord = projectCount === 1 ? 'project' : 'projects';
+const syncedText = syncedOn ? ` · synced ${syncedOn}` : '';
+---
+
+<header class="hero">
+  <div class="hero-lede">
+    <h1>A personal shelf of agent skills.</h1>
+    {/* The animated .tally spans are CSS-generated content, so they are
+        aria-hidden; the real digits live in .sr-only text that screen
+        readers announce and that also renders inline when CSS is off. */}
+    <p class="inventory-line"><span class="tally" aria-hidden="true" style={`--tally-to:${skillCount}`}></span><span class="sr-only">{skillCount}</span>{` ${skillWord} · `}<span class="tally" aria-hidden="true" style={`--tally-to:${projectCount}`}></span><span class="sr-only">{projectCount}</span>{` ${projectWord}${syncedText}`}</p>
+    <p class="byline">{'Built, collected, and used daily by '}<a href="https://github.com/ZH-L1N">ZH-L1N</a>{' across Claude Code, Codex, and the agents runtime.'}</p>
+  </div>
+  {/*
+    oil-motion slot — reintroduce when the animation exists:
+      <div class="hero-slot"><!-- animation mounts here --></div>
+    and re-enable the two-column .hero rule in index.astro.
+  */}
+</header>

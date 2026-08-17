@@ -39,6 +39,7 @@ skills:
   minimal-editorial-poster:
     category: design-visual
     description: "Generates sparse paper-texture posters: dominant negative space, one content-derived visual event, and a single chromatic anchor."
+    images: [minimal-editorial-poster.jpg]
 
   photo-anchored-zine:
     category: design-visual

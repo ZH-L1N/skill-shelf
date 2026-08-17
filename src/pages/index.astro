@@ -1,15 +1,713 @@
 ---
+/**
+ * The whole site: nav + hero + skills-by-category + projects + footer.
+ *
+ * Every card string comes from `loadCatalog()`; nothing below is hand-written
+ * card copy. Showcase filenames from `data/overrides.yaml` resolve to real
+ * assets through the single `import.meta.glob` in this file, and the resolved
+ * `ImageMetadata` is handed down as a prop so components never glob.
+ */
+import generated from '../../data/generated.json';
+import { loadCatalog } from '../lib/entries.mjs';
+import Hero from '../components/Hero.astro';
+import CategorySection from '../components/CategorySection.astro';
+import ProjectCard from '../components/ProjectCard.astro';
 
+// `import.meta.url` would point into dist/ once this page is bundled for the
+// prerender pass, so the data layer is read relative to the process cwd —
+// which is the project root for `astro build`, `astro dev`, and CI alike.
+const catalog = loadCatalog(process.cwd());
+
+// Build-time visibility for data problems that degrade instead of failing.
+for (const warning of catalog.warnings) {
+  console.warn(`[skill-shelf] ${warning}`);
+}
+for (const key of catalog.orphanedOverrides) {
+  console.warn(`[skill-shelf] orphaned override key (no scanned slug, no manual: true): ${key}`);
+}
+
+// One glob for the whole site. Keys are paths; index them by bare filename so
+// an overrides `images: [foo.png]` entry resolves directly.
+const showcaseModules = import.meta.glob('../showcase/*.{png,jpg,jpeg,webp,avif}', {
+  eager: true,
+  import: 'default',
+});
+const showcase = new Map(
+  Object.entries(showcaseModules).map(([filePath, image]) => [filePath.split('/').pop(), image]),
+);
+
+/**
+ * Logo marks sit ON the paper ground instead of being cropped to fill it.
+ * Keyed by filename rather than by a data field: it is a property of the
+ * artwork, not of the skill, and keeping it here avoids inventing an
+ * overrides key that the committed data tests do not know about.
+ */
+const CONTAIN_IMAGES = new Set(['superpowers.png']);
+
+function decorate(item, ordinal) {
+  const file = item.images[0] ?? null;
+  const image = file ? (showcase.get(file) ?? null) : null;
+  if (file && !image) {
+    // A filename that passed the data layer's resolution test but missed the
+    // glob means an extension outside png/jpg/jpeg/webp/avif — surface it
+    // instead of silently rendering a text-only card.
+    console.warn(
+      `[skill-shelf] "${item.name}": images entry "${file}" not matched by the showcase glob (allowed: png/jpg/jpeg/webp/avif)`,
+    );
+  }
+  return {
+    image,
+    contain: file ? CONTAIN_IMAGES.has(file) : false,
+    // Index numerals live in the thumbnail corner, so a text-only card has
+    // nowhere to hang one — the running count still reflects card position.
+    index: image ? String(ordinal).padStart(2, '0') : null,
+  };
+}
+
+let ordinal = 0;
+const sections = catalog.skillsByCategory.map((group) => ({
+  key: group.key,
+  name: group.name,
+  cards: group.entries.map((entry) => {
+    ordinal += 1;
+    return { entry, ...decorate(entry, ordinal) };
+  }),
+}));
+
+const projectCards = catalog.projects.map((project) => ({
+  project,
+  ...decorate(project, 0),
+}));
+
+const skillCount = sections.reduce((total, section) => total + section.cards.length, 0);
+const projectCount = projectCards.length;
+const syncedOn = String(generated.generatedAt ?? '').slice(0, 10);
+
+// Golden rounded square, same hue as --color-accent. Inline so the page makes
+// no favicon request and never 404s.
+// The oklch literal below MUST mirror --color-accent (a data URI cannot
+// reference CSS custom properties — platform limitation, reviewed and
+// accepted at the Task 6 codex milestone). Change both together.
+const favicon =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' style='fill:oklch(75%25 0.14 85)'/%3E%3C/svg%3E";
 ---
 
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Skill Shelf</title>
+    <meta
+      name="description"
+      content="A personal shelf of agent skills, built and collected by ZH-L1N."
+    />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" href={favicon} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://api.fontshare.com/v2/css?f%5B%5D=satoshi@700,900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="wrap">
+      <nav class="nav" aria-label="Main">
+        <div class="chip">
+          <a class="wordmark" href="#">Skill Shelf</a>
+          <ul>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="https://github.com/ZH-L1N" rel="me">{'GitHub ↗'}</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <Hero skillCount={skillCount} projectCount={projectCount} syncedOn={syncedOn} />
+
+      <main id="skills" class="shelf">
+        <h2>Skills</h2>
+        {sections.map((section) => <CategorySection name={section.name} cards={section.cards} />)}
+      </main>
+
+      {
+        projectCards.length > 0 && (
+          <section id="projects" class="shelf">
+            <h2>Projects</h2>
+            {projectCards.map((card) => (
+              <ProjectCard project={card.project} image={card.image} contain={card.contain} />
+            ))}
+          </section>
+        )
+      }
+
+      <footer class="foot">
+        <p class="statement">A shelf, not a marketplace.</p>
+        <p class="meta-line">
+          {'© 2026 '}<a href="https://github.com/ZH-L1N">ZH-L1N</a>{' · inventory generated by '}<span
+            class="meta">scripts/sync.mjs</span
+          >{' · built with Astro'}
+        </p>
+      </footer>
+    </div>
+  </body>
 </html>
+
+<style is:global>
+  /* Design system extracted verbatim from docs/mockup/skill-shelf-mockup-v2.html
+     (variant B, "playful shelf" — approved 2026-08-16). Mockup-only rules —
+     the dashed gate-note box and the labelled thumbnail placeholder — are
+     dropped; three approved CSS-only micro-interactions are added. */
+
+  :root {
+    /* color — cream paper, one golden accent hue (85), nothing pure black or white */
+    --color-paper: oklch(96.5% 0.015 95);
+    --color-grid: oklch(92% 0.012 95);
+    --color-card: oklch(98.5% 0.006 95);
+    --color-paper-2: oklch(94% 0.016 95);
+    --color-rule: oklch(88% 0.014 95);
+    --color-faint: oklch(68% 0.01 85);
+    --color-neutral: oklch(52% 0.012 85);
+    --color-muted: oklch(40% 0.013 82);
+    --color-ink: oklch(22% 0.015 80);
+    --color-accent: oklch(75% 0.14 85);
+    --color-focus: oklch(48% 0.13 85);
+    --color-shadow-a: oklch(22% 0.015 80 / 0.06);
+    --color-shadow-b: oklch(22% 0.015 80 / 0.09);
+
+    /* type — Satoshi display 700 · Plus Jakarta Sans body · Space Mono = metadata register only */
+    --font-display: 'Satoshi', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-meta: 'Space Mono', ui-monospace, monospace;
+
+    --text-xs: 0.75rem;
+    --text-sm: 0.8125rem;
+    --text-base: 1rem;
+    --text-md: 1.125rem;
+    --text-lg: 1.375rem;
+    --text-xl: 1.75rem;
+    --text-2xl: 2.25rem;
+    --text-3xl: clamp(2.25rem, 4.2vw + 0.9rem, 3.5rem);
+
+    /* space — 4pt scale */
+    --space-2xs: 0.25rem;
+    --space-xs: 0.5rem;
+    --space-sm: 0.75rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2.5rem;
+    --space-2xl: 4rem;
+    --space-3xl: 6rem;
+
+    /* form */
+    --radius-card: 15px;
+    --radius-chip: 999px;
+    --radius-sm: 6px;
+    --rule-hair: 1px solid var(--color-rule);
+    --measure: 60ch;
+    --grid-cell: 24px;
+
+    /* motion */
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --dur-micro: 140ms;
+    --dur-lift: 120ms;
+    --dur-mark: 150ms;
+    --dur-tally: 800ms;
+
+    --shadow-whisper: 0 1px 2px var(--color-shadow-a), 0 10px 28px var(--color-shadow-b);
+  }
+
+  html {
+    overflow-x: clip;
+  }
+  body {
+    overflow-x: clip;
+    margin: 0;
+    background-color: var(--color-paper);
+    background-image:
+      repeating-linear-gradient(to right, var(--color-grid) 0 1px, transparent 1px var(--grid-cell)),
+      repeating-linear-gradient(to bottom, var(--color-grid) 0 1px, transparent 1px var(--grid-cell));
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: 1.6;
+  }
+  * {
+    box-sizing: border-box;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-style: normal;
+  }
+
+  a {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--color-rule);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    transition: text-decoration-color var(--dur-micro) var(--ease-out);
+  }
+  a:hover {
+    text-decoration-color: var(--color-accent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 3px;
+  }
+
+  .wrap {
+    max-width: 74rem;
+    margin-inline: auto;
+    padding-inline: var(--space-lg);
+  }
+
+  /* ---- nav · N2 floating chip, parked left ---- */
+  .nav {
+    display: flex;
+    padding-block: var(--space-lg) 0;
+  }
+  .chip {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-lg);
+    background: var(--color-card);
+    border: var(--rule-hair);
+    border-radius: var(--radius-chip);
+    padding: var(--space-xs) var(--space-lg);
+    box-shadow: 0 1px 2px var(--color-shadow-a);
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+  .wordmark {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-base);
+    letter-spacing: -0.015em;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .chip ul {
+    display: flex;
+    gap: var(--space-md);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .chip a {
+    font-size: var(--text-base);
+    white-space: nowrap;
+  }
+
+  /* ---- hero · left-biased, friendly, not full-height ----
+     Production is one column: the oil-motion box is a mockup-only artifact.
+     The grid structure stays so the animation can slot in later — restore the
+     commented rule below together with the .hero-slot markup in Hero.astro. */
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    /* grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); */
+    gap: var(--space-2xl);
+    align-items: start;
+    padding-block: var(--space-2xl) var(--space-3xl);
+  }
+  .hero-lede {
+    min-width: 0;
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-3xl);
+    line-height: 1.06;
+    letter-spacing: -0.03em;
+    overflow-wrap: anywhere;
+    min-width: 0;
+    margin: 0 0 var(--space-md);
+    max-width: 15ch;
+  }
+  .inventory-line {
+    font-family: var(--font-meta);
+    font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-neutral);
+    margin: 0 0 var(--space-lg);
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+  .byline {
+    margin: 0;
+    max-width: var(--measure);
+    color: var(--color-muted);
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+  .byline a {
+    font-weight: 700;
+  }
+
+  /* micro-interaction 3 · inventory count-up, zero JS.
+     `--tally` is a registered integer so it interpolates; its base value is
+     the true final number, so an unsupported @property (discrete animation)
+     or a reduced-motion override both still land on the correct figure. */
+  @property --tally {
+    syntax: '<integer>';
+    inherits: false;
+    initial-value: 0;
+  }
+  .tally {
+    --tally: var(--tally-to, 0);
+    counter-reset: tally var(--tally);
+    animation: tally-up var(--dur-tally) var(--ease-out) both;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Real digits for screen readers and CSS-off rendering; the visual number
+     is the aria-hidden .tally counter above. */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+  .tally::after {
+    content: counter(tally);
+  }
+  @keyframes tally-up {
+    from {
+      --tally: 0;
+    }
+    to {
+      --tally: var(--tally-to, 0);
+    }
+  }
+
+  /* ---- shelf sections ---- */
+  .shelf {
+    padding-block: 0 var(--space-2xl);
+  }
+  .shelf > h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-xl);
+    letter-spacing: -0.025em;
+    margin: 0 0 var(--space-xl);
+  }
+  .category {
+    margin-bottom: var(--space-2xl);
+  }
+
+  /* section head stacks vertically — mark, then name, then count */
+  .category-head {
+    margin-bottom: var(--space-lg);
+  }
+  /* micro-interaction 2 · the gold mark extends on section-head hover */
+  .category-mark {
+    display: block;
+    width: 22px;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--color-accent);
+    margin-bottom: var(--space-sm);
+    transition: width var(--dur-mark) var(--ease-out);
+  }
+  .category-head:hover .category-mark {
+    width: 48px;
+  }
+  .category-head h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-lg);
+    letter-spacing: -0.02em;
+    margin: 0 0 var(--space-2xs);
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+  .category-head .count {
+    display: block;
+    font-family: var(--font-meta);
+    font-size: var(--text-xs);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-neutral);
+  }
+
+  /* ---- card grid · 3-up desktop ---- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-lg);
+    /* The mockup's cards all carried a thumbnail, so stretch produced an even
+       grid. In production a text-only card next to an image card would be
+       stretched to twice its content height; sizing to content keeps the
+       shelf ragged-but-honest instead of full of empty card. */
+    align-items: start;
+  }
+  /* micro-interaction 1 · whisper lift on hover */
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: var(--color-card);
+    border: var(--rule-hair);
+    border-radius: var(--radius-card);
+    padding: var(--space-sm);
+    transition:
+      box-shadow var(--dur-lift) var(--ease-out),
+      transform var(--dur-lift) var(--ease-out);
+  }
+  .card:hover {
+    box-shadow: var(--shadow-whisper);
+    transform: translateY(-2px);
+  }
+
+  /* showcase imagery — square aspect box, image fills it edge to edge */
+  .thumb {
+    position: relative;
+    display: block;
+    aspect-ratio: 1 / 1;
+    background: var(--color-paper-2);
+    border-radius: calc(var(--radius-card) - 6px);
+    min-width: 0;
+    text-decoration: none;
+  }
+  .thumb--image {
+    padding: 0;
+    overflow: hidden;
+  }
+  .thumb-img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    border-radius: inherit;
+  }
+  /* logo marks on white — never crop, sit on the paper ground */
+  .thumb-img--contain {
+    object-fit: contain;
+    background: var(--color-paper-2);
+    padding: var(--space-md);
+  }
+  /* oiloil homage — quiet dotted index numeral, one per thumbnail corner */
+  .index {
+    position: absolute;
+    top: var(--space-xs);
+    right: var(--space-xs);
+    font-family: var(--font-meta);
+    font-size: var(--text-xs);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-faint);
+    background: var(--color-card);
+    border: 1px dotted var(--color-faint);
+    border-radius: var(--radius-sm);
+    padding: 0 var(--space-2xs);
+    line-height: 1.6;
+  }
+
+  .card-body {
+    padding: var(--space-md) var(--space-sm) var(--space-xs);
+    min-width: 0;
+  }
+  .card h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-md);
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    margin: 0 0 var(--space-xs);
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+  .card p {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: var(--text-base);
+    line-height: 1.55;
+    max-width: 46ch;
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+  .badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    list-style: none;
+    margin: var(--space-md) 0 0;
+    padding: 0;
+  }
+  .badge {
+    font-family: var(--font-meta);
+    font-size: var(--text-xs);
+    color: var(--color-neutral);
+    background: var(--color-paper-2);
+    border-radius: var(--radius-chip);
+    padding: var(--space-2xs) var(--space-xs);
+    white-space: nowrap;
+  }
+  .notes {
+    margin-top: var(--space-sm);
+    color: var(--color-neutral);
+    font-size: var(--text-sm);
+  }
+  .repo {
+    display: inline-block;
+    margin-top: var(--space-sm);
+    font-family: var(--font-meta);
+    font-size: var(--text-xs);
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+
+  /* ---- project · the deliberate asymmetry, image-led and wide ---- */
+  .project {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--space-xl);
+    align-items: center;
+    background: var(--color-card);
+    border: var(--rule-hair);
+    border-radius: var(--radius-card);
+    padding: var(--space-sm);
+    transition:
+      box-shadow var(--dur-lift) var(--ease-out),
+      transform var(--dur-lift) var(--ease-out);
+  }
+  .project:hover {
+    box-shadow: var(--shadow-whisper);
+    transform: translateY(-2px);
+  }
+  /* a project without imagery is one column of text, never an empty box */
+  .project--text {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .project .thumb {
+    aspect-ratio: 16 / 10;
+  }
+  .project-body {
+    padding: var(--space-md) var(--space-lg) var(--space-lg) var(--space-sm);
+    min-width: 0;
+  }
+  .project .kind {
+    display: block;
+    font-family: var(--font-meta);
+    font-size: var(--text-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-neutral);
+    margin-bottom: var(--space-sm);
+  }
+  .project h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-2xl);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin: 0 0 var(--space-sm);
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+  .project p {
+    margin: 0;
+    max-width: var(--measure);
+    color: var(--color-muted);
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+  /* ---- footer · Ft5 statement line ---- */
+  .foot {
+    border-top: var(--rule-hair);
+    padding-block: var(--space-xl) var(--space-2xl);
+  }
+  .foot .statement {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-lg);
+    letter-spacing: -0.02em;
+    margin: 0 0 var(--space-sm);
+    max-width: 24ch;
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+  .foot p.meta-line {
+    margin: 0;
+    font-size: var(--text-base);
+    color: var(--color-neutral);
+    max-width: 62ch;
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+  .foot a {
+    white-space: nowrap;
+  }
+  .foot .meta {
+    font-family: var(--font-meta);
+    font-size: var(--text-sm);
+  }
+
+  /* ---- responsive · 3-up → 2-up → 1-up ---- */
+  @media (max-width: 900px) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 768px) {
+    .hero {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-lg);
+      padding-block: var(--space-xl) var(--space-2xl);
+    }
+    .hero h1 {
+      max-width: 20ch;
+    }
+    .project {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-md);
+    }
+    .project-body {
+      padding: var(--space-xs) var(--space-sm) var(--space-md);
+    }
+  }
+  @media (max-width: 600px) {
+    .grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  @media (max-width: 414px) {
+    .wrap {
+      padding-inline: var(--space-md);
+    }
+    .chip {
+      gap: var(--space-sm);
+      padding-inline: var(--space-md);
+    }
+    .chip ul {
+      gap: var(--space-sm);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition-duration: 1ms !important;
+    }
+    .tally {
+      animation: none;
+    }
+    .card:hover,
+    .project:hover {
+      transform: none;
+    }
+  }
+</style>

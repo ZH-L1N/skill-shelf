@@ -1,0 +1,59 @@
+---
+/**
+ * One skill card. Every string on it comes from the merged catalog entry —
+ * nothing here is hand-written copy.
+ *
+ * `image` is a resolved `ImageMetadata` (or null); `index.astro` owns the
+ * `src/showcase/` glob so the lookup lives in exactly one place.
+ */
+import { Image } from 'astro:assets';
+
+const { entry, image = null, contain = false, index = null } = Astro.props;
+
+/** github.com/owner/repo -> owner/repo; anything unparseable renders as-is. */
+function repoLabel(url) {
+  try {
+    return new URL(url).pathname.replace(/^\/+|\/+$/g, '') || url;
+  } catch {
+    return url;
+  }
+}
+---
+
+<article class="card">
+  {
+    image && (
+      <a class="thumb thumb--image" href={image.src}>
+        <Image
+          class:list={['thumb-img', contain && 'thumb-img--contain']}
+          src={image}
+          widths={[320, 640]}
+          sizes="(min-width: 900px) 21rem, (min-width: 600px) 44vw, 90vw"
+          alt={`${entry.name} — showcase image`}
+        />
+        {index && <span class="index">{index}</span>}
+      </a>
+    )
+  }
+  <div class="card-body">
+    <h4>{entry.name}</h4>
+    <p>{entry.description}</p>
+    {
+      entry.runtimes.length > 0 && (
+        <ul class="badges">
+          {entry.runtimes.map((runtime) => (
+            <li class="badge">{runtime}</li>
+          ))}
+        </ul>
+      )
+    }
+    {entry.notes && <p class="notes">{entry.notes}</p>}
+    {
+      entry.repo && (
+        <a class="repo" href={entry.repo}>
+          {`${repoLabel(entry.repo)} ↗`}
+        </a>
+      )
+    }
+  </div>
+</article>
