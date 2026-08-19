@@ -28,6 +28,20 @@ Verify: the page renders all cards with images, and a follow-up push to
 Pages project → **Custom domains** → add the domain (buy via Cloudflare
 Registrar if needed) → follow the DNS prompt. No code changes required.
 
+## Troubleshooting
+
+- **Pushes stop deploying** — check the project's Deployments page for a
+  yellow "This project is disconnected from your Git account" banner
+  (happened 2026-08-18: only the first deploy existed; every later push was
+  silently ignored). Fix: Settings → Build → Git repository row → **Manage**
+  → re-authorize the Cloudflare Pages GitHub App for ZH-L1N (keep
+  skill-shelf selected). Prefer Manage over Disconnect; disconnect/reconnect
+  is the fallback and preserves project settings either way. Confirm with a
+  fresh push, then curl the live site for a fingerprint of the new commit.
+- **Build fails on Cloudflare but CI is green** — open the failing
+  deployment's log; the usual suspects are Node-version drift (pinned by
+  `.node-version`) or lockfile mismatch.
+
 ## Notes
 
 - CI (GitHub Actions) runs `npm test` + `npm run build` on every push;
