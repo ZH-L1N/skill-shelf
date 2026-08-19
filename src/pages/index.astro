@@ -480,11 +480,23 @@ const favicon =
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--space-lg);
-    /* The mockup's cards all carried a thumbnail, so stretch produced an even
-       grid. In production a text-only card next to an image card would be
-       stretched to twice its content height; sizing to content keeps the
-       shelf ragged-but-honest instead of full of empty card. */
-    align-items: start;
+    /* Image cards stretch so a row's bottoms align even when descriptions
+       wrap to different line counts (the surplus lands above the pinned
+       badge row). Text-only cards opt out via align-self below — stretched
+       next to an image card they would be twice their content height; they
+       stay content-sized until their codex illustrations land. */
+    align-items: stretch;
+  }
+  .card--text {
+    align-self: start;
+  }
+  .card--image .card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .card--image .badges {
+    margin-top: auto;
   }
   /* micro-interaction 1 · whisper lift on hover */
   .card {

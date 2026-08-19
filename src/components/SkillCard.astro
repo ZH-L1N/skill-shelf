@@ -20,7 +20,7 @@ function repoLabel(url) {
 }
 ---
 
-<article class="card">
+<article class:list={['card', image ? 'card--image' : 'card--text']}>
   {
     image && (
       <a class="thumb thumb--image" href={image.src}>
