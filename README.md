@@ -8,6 +8,20 @@ across Claude Code, Codex, and the agents runtime — plus selected projects.
 [`docs/superpowers/specs/2026-08-16-skill-shelf-design.md`](docs/superpowers/specs/2026-08-16-skill-shelf-design.md);
 implementation plan: [`plans/v0.1.0-skill-shelf.md`](plans/v0.1.0-skill-shelf.md).
 
+<p align="center">
+  <img src="./assets/readme/hero.svg" width="100%" alt="Skill Shelf personal catalog of agent skills" />
+</p>
+
+<p align="center">
+  <img src="./assets/readme/showcase.svg" width="100%" alt="Selected Skill Shelf artifacts" />
+</p>
+
+## Shelf index
+
+<p align="center">
+  <img src="./assets/readme/categories.svg" width="100%" alt="Four Skill Shelf categories" />
+</p>
+
 ## How it works
 
 - `scripts/sync.mjs` scans my local skill installations (Claude Code, Codex,

@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">Skill Shelf — a personal catalog of agent skills</title>
+  <desc id="desc">A paper-toned index card showing a personal catalog of 15 agent skills and one project across workflow, orchestration, and design.</desc>
+  <defs>
+    <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M24 0H0V24" fill="none" stroke="#E9E4D8" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="360" rx="28" fill="#F8F5ED"/>
+  <rect x="1" y="1" width="1198" height="358" rx="27" fill="url(#grid)" opacity="0.62"/>
+  <rect x="1" y="1" width="1198" height="358" rx="27" fill="none" stroke="#D9D2C4" stroke-width="2"/>
+
+  <g id="hero-copy" transform="translate(64 48)" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" fill="#302D29">
+    <text x="0" y="0" font-size="18" font-weight="700" letter-spacing="3" fill="#8A6B2D">PERSONAL CATALOG / 2026</text>
+    <rect x="0" y="22" width="42" height="6" rx="3" fill="#D4AA48"/>
+    <text x="0" y="104" font-size="76" font-weight="800" letter-spacing="-3">SKILL</text>
+    <text x="0" y="178" font-size="76" font-weight="800" letter-spacing="-3">SHELF</text>
+    <text x="2" y="218" font-size="22" font-weight="500" fill="#625D55">A working shelf of agent skills</text>
+    <text x="2" y="247" font-size="22" font-weight="500" fill="#625D55">built, collected, and used daily.</text>
+    <text x="2" y="294" font-size="18" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" letter-spacing="1" fill="#847C70">A SHELF, NOT A MARKETPLACE.</text>
+  </g>
+
+  <g id="shelf-index" transform="translate(760 48)">
+    <text x="0" y="0" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="17" letter-spacing="2" fill="#847C70">INDEX / 01</text>
+    <text x="0" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="27" font-weight="700" fill="#302D29">15 skills · 1 project</text>
+
+    <g transform="translate(0 68)">
+      <path d="M0 43H372M0 110H372M0 177H372" stroke="#BEB5A6" stroke-width="3"/>
+      <path d="M0 45H372M0 112H372M0 179H372" stroke="#FFFFFF" stroke-width="2" opacity="0.8"/>
+
+      <g transform="translate(18 0)">
+        <rect width="112" height="32" rx="7" fill="#FFFDF8" stroke="#D9D2C4"/>
+        <rect x="10" y="9" width="14" height="14" rx="3" fill="#D4AA48"/>
+        <text x="34" y="21" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14" font-weight="700" fill="#49443D">DEV</text>
+      </g>
+      <g transform="translate(150 0)">
+        <rect width="130" height="32" rx="7" fill="#FFFDF8" stroke="#D9D2C4"/>
+        <rect x="10" y="9" width="14" height="14" rx="3" fill="#D4AA48"/>
+        <text x="34" y="21" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14" font-weight="700" fill="#49443D">ORCHESTRATE</text>
+      </g>
+      <g transform="translate(32 67)">
+        <rect width="168" height="32" rx="7" fill="#FFFDF8" stroke="#D9D2C4"/>
+        <rect x="10" y="9" width="14" height="14" rx="3" fill="#D4AA48"/>
+        <text x="34" y="21" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14" font-weight="700" fill="#49443D">DESIGN / VISUAL</text>
+      </g>
+      <g transform="translate(230 67)">
+        <rect width="102" height="32" rx="7" fill="#302D29"/>
+        <text x="16" y="21" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14" font-weight="700" fill="#F8F5ED">+ PROJECT</text>
+      </g>
+      <g transform="translate(92 134)">
+        <rect width="188" height="32" rx="7" fill="#D4AA48"/>
+        <text x="16" y="21" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14" font-weight="700" fill="#302D29">SYNC → STATIC SITE</text>
+      </g>
+    </g>
+
+    <g transform="translate(0 292)" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="15" fill="#847C70">
+      <text x="0" y="0">CLAUDE CODE</text>
+      <text x="132" y="0">CODEX</text>
+      <text x="220" y="0">AGENTS RUNTIME</text>
+    </g>
+  </g>
+</svg>
